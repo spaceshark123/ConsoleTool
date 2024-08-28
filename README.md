@@ -10,6 +10,7 @@ for creating interactive CLIs for your Java needs
 - **Input and Output Handling**: Provides methods to read user input and print output to the console.
 - **Stream Configuration**: Allows configuring input and output streams for flexible usage scenarios.
 - **Clear Screen**: Functionality to clear the console screen and display a title.
+- **Progress Bar**: Allows creating progress bars to display progress on tasks
 - **Error Handling**: Basic error handling for unrecognized commands.
 
 ## How to Use
@@ -106,6 +107,7 @@ void Output(double output)
 void Output(int[] arr)
 void Output(double[] arr)
 void Output(Object[] arr)
+void ProgressBar(int width, String title, int current, int total, String subtitle)
 ```
 
 Various overloaded methods to print different types of output to the console.

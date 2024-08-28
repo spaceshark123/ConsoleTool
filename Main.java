@@ -7,7 +7,10 @@ public class Main {
         ConsoleTool console = new ConsoleTool(System.in, System.out, "Test Console\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
         console.addCommand("test", new ConsoleTool.Command() {
             public void execute(String... arguments) {
-                console.Output("Test command executed");
+                for(int i = 0; i < 1000; i++) {
+                    console.Output("Test " + i);
+                    console.ProgressBar(15, "Progress: ", i, 1000, " subtext");
+                }
             }
         });
         console.addCommand("add", new ConsoleTool.Command() {
