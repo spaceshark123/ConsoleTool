@@ -1,4 +1,6 @@
-# ConsoleTool
+# Java Console Tool
+for creating interactive CLIs for your Java needs
+#
 
 `ConsoleTool` is a Java class designed to create a console-based interface for interacting with a program, similar to a command-line interface (CLI). It allows for custom commands to be added, which can execute their own code and take in their own arguments. This tool can be useful for building interactive applications that require a simple, text-based user interface.
 
