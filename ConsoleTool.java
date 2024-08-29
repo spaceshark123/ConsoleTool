@@ -128,12 +128,18 @@ public class ConsoleTool {
 		String filled = "█";
 		String unfilled = "░";
 		double fill = (double) current / total;
-		if (fill >= 0 && fill <= 1) {
-			//set progress bar
-			int fillAmount = (int) Math.ceil(fill * width);
-			StringBuilder bar = new StringBuilder();
-			bar.append(title).append(": ").append(filled.repeat(fillAmount)).append(unfilled.repeat(width - fillAmount)).append(" ").append(current).append("/").append(total).append(" ").append(subtitle).append(" ").append("\r");
-			out.print(bar.toString());
-		}
+        if (fill >= 0 && fill <= 1) {
+            //set progress bar
+            int fillAmount = (int) Math.ceil(fill * width);
+            StringBuilder bar = new StringBuilder();
+            bar.append(title).append(": ").append(filled.repeat(fillAmount)).append(unfilled.repeat(width - fillAmount))
+                    .append(" ").append(current).append("/").append(total).append(" ").append(subtitle).append(" ");
+            if(current == total) {
+                bar.append("\n");
+            } else {
+                bar.append("\r");
+            }
+            out.print(bar.toString());
+        }
 	}
 }
