@@ -13,6 +13,14 @@ public class ConsoleToolTest {
                     console.progressBar(15, "Progress: ", i, 1000, " subtext");
                 }
             }
+
+            public String description() {
+                return "A test command that prints numbers and a progress bar";
+            }
+
+            public String usage() {
+                return "";
+            }
         });
         console.addCommand("add", new Command() {
             public void execute(ConsoleTool console, String... arguments) {
@@ -21,6 +29,14 @@ public class ConsoleToolTest {
                 int b = Args.parseInt(arguments[1], "second number");
                 console.println(a + b);
             }
+
+            public String description() {
+                return "Adds two integers";
+            }
+
+            public String usage() {
+                return "<int1> <int2>";
+            }
         });
         console.addCommand("sub", new Command() {
             public void execute(ConsoleTool console, String... arguments) {
@@ -28,6 +44,14 @@ public class ConsoleToolTest {
                 int a = Args.parseInt(arguments[0], "first number");
                 int b = Args.parseInt(arguments[1], "second number");
                 console.println(a - b);
+            }
+
+            public String description() {
+                return "Subtracts two integers";
+            }
+
+            public String usage() {
+                return "<int1> <int2>";
             }
         });
         console.start();
