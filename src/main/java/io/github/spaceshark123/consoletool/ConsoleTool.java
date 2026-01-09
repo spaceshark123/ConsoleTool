@@ -21,6 +21,7 @@ public class ConsoleTool {
     private final InputStream in;
     private final PrintStream out;
 
+    private String prompt = ">> ";
     private boolean ansiEnabled = true;
     private volatile boolean running = false;
 
@@ -60,6 +61,10 @@ public class ConsoleTool {
 
     public void setAnsiEnabled(boolean enabled) {
         this.ansiEnabled = enabled;
+    }
+
+    public void setPrompt(String prompt) {
+        this.prompt = prompt;
     }
 
     // this function is used to add a command to the hashmap
@@ -172,7 +177,7 @@ public class ConsoleTool {
     }
 
     public String input() {
-        out.print(">> ");
+        out.print(prompt);
         try {
             return scanner.nextLine();
         } catch (NoSuchElementException e) {
