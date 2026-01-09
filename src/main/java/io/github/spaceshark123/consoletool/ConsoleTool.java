@@ -15,6 +15,8 @@ public class ConsoleTool {
     private InputStream in;
     private PrintStream out;
 
+    private volatile boolean running = false;
+
     // constructor
     public ConsoleTool(InputStream in, PrintStream out, String title) {
         scanner = new Scanner(in);
@@ -33,7 +35,8 @@ public class ConsoleTool {
     // this function is used to start the console interface
     public void start() {
         // the main loop of the console interface
-        while (true) {
+        running = true;
+        while (running) {
             // read the user input
             String input = Input();
             // split the input into an array of strings
@@ -64,19 +67,19 @@ public class ConsoleTool {
         scanner.close();
     }
 
-    public void Output(Object output) {
+    public void output(Object output) {
         out.println(output);
     }
 
-    public void Output(int output) {
+    public void output(int output) {
         out.println(output);
     }
 
-    public void Output(double output) {
+    public void output(double output) {
         out.println(output);
     }
 
-    public void Output(int[] arr) {
+    public void output(int[] arr) {
         //rewrite with stringbuilder
         StringBuilder sb = new StringBuilder();
         sb.append("[");
@@ -89,7 +92,7 @@ public class ConsoleTool {
         out.println(sb.toString());
 	}
 
-	public void Output(double[] arr) {
+	public void output(double[] arr) {
 		//rewrite with stringbuilder
         StringBuilder sb = new StringBuilder();
         sb.append("[");
@@ -102,7 +105,7 @@ public class ConsoleTool {
         out.println(sb.toString());
 	}
 
-	public void Output(Object[] arr) {
+	public void output(Object[] arr) {
 		//rewrite with stringbuilder
         StringBuilder sb = new StringBuilder();
         sb.append("[");
@@ -115,18 +118,18 @@ public class ConsoleTool {
         out.println(sb.toString());
 	}
 
-    public String Input() {
+    public String input() {
         System.out.print(">> ");
         return scanner.nextLine();
     }
 
-    public void Clear() {
+    public void clear() {
         out.print("\033[H\033[2J");
         out.flush();
         out.println(title);
     }
 
-    public void ProgressBar(int width, String title, int current, int total, String subtitle) {
+    public void progressBar(int width, String title, int current, int total, String subtitle) {
 		String filled = "█";
 		String unfilled = "░";
 		double fill = (double) current / total;
