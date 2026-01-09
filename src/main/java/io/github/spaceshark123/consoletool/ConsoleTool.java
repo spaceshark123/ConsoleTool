@@ -105,6 +105,11 @@ public class ConsoleTool {
             // execute the command
             try {
                 command.execute(this, arguments);
+            } catch (IllegalArgumentException e) {
+                println("Error: " + e.getMessage());
+                if (!command.usage().isEmpty()) {
+                    println("Usage: " + commandName + " " + command.usage());
+                }
             } catch (Exception e) {
                 println("Error: " + e.getMessage());
             }
