@@ -13,6 +13,13 @@ public final class Args {
         }
     }
 
+    public static void max(String[] args, int max) {
+        if (args.length > max) {
+            throw new IllegalArgumentException(
+                    "Expected at most " + max + " arguments, got " + args.length);
+        }
+    }
+
     public static int parseInt(String value, String name) {
         try {
             return Integer.parseInt(value);
@@ -47,4 +54,48 @@ public final class Args {
         throw new IllegalArgumentException(
                 "Invalid boolean for " + name + ": " + value);
     }
+
+    public static String parseString(String value, String name) {
+        if (value == null || value.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Invalid string for " + name + ": " + value);
+        }
+        return value;
+    }
+
+    public static int optionalInt(String[] args, int index, int defaultValue, String name) {
+        if (index >= args.length) {
+            return defaultValue;
+        }
+        return parseInt(args[index], name);
+    }
+
+    public static double optionalDouble(String[] args, int index, double defaultValue, String name) {
+        if (index >= args.length) {
+            return defaultValue;
+        }
+        return parseDouble(args[index], name);
+    }
+
+    public static long optionalLong(String[] args, int index, long defaultValue, String name) {
+        if (index >= args.length) {
+            return defaultValue;
+        }
+        return parseLong(args[index], name);
+    }
+
+    public static boolean optionalBoolean(String[] args, int index, boolean defaultValue, String name) {
+        if (index >= args.length) {
+            return defaultValue;
+        }
+        return parseBoolean(args[index], name);
+    }
+
+    public static String optionalString(String[] args, int index, String defaultValue, String name) {
+        if (index >= args.length) {
+            return defaultValue;
+        }
+        return parseString(args[index], name);
+    }
+
 }
