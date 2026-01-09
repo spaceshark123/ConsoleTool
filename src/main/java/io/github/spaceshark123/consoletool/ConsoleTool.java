@@ -1,3 +1,5 @@
+package io.github.spaceshark123.consoletool;
+
 import java.util.*;
 import java.io.*;
 

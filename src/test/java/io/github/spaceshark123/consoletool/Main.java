@@ -1,3 +1,5 @@
+package io.github.spaceshark123.consoletool;
+
 import java.util.Scanner;
 import java.util.HashMap;
 import java.util.Arrays;
