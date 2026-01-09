@@ -15,6 +15,7 @@ public class ConsoleTool {
     private InputStream in;
     private PrintStream out;
 
+    private boolean ansiEnabled = true;
     private volatile boolean running = false;
 
     // constructor
@@ -23,7 +24,16 @@ public class ConsoleTool {
         this.in = in;
         this.out = out;
         this.title = title;
-        Clear();
+        // initially set ansiEnabled to false if on windows (for compatibility)
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.contains("win")) {
+            ansiEnabled = false;
+        }
+        clear();
+    }
+
+    public void setAnsiEnabled(boolean enabled) {
+        this.ansiEnabled = enabled;
     }
 
     // this function is used to add a command to the hashmap
@@ -100,7 +110,8 @@ public class ConsoleTool {
         // NO scanner.close()
     }
 
-    // finish method that allows closing streams (recommended to avoid resource leaks)
+    // finish method that allows closing streams (recommended to avoid resource
+    // leaks)
     public void finish(boolean closeStreams) {
         if (closeStreams) {
             scanner.close();
@@ -137,12 +148,31 @@ public class ConsoleTool {
     }
 
     public void clear() {
-        out.print("\033[H\033[2J");
-        out.flush();
+        if (!ansiEnabled) {
+            // print multiple newlines as a reliable fallback
+            // ANSI codes work on Windows 10+ with modern terminals, but
+            // this ensures compatibility with older systems
+            for (int i = 0; i < 50; i++) {
+                out.println();
+            }
+        } else {
+            // Use ANSI escape codes to clear the console
+            out.print("\033[H\033[2J");
+            out.flush();
+        }
         out.println(title);
     }
 
     public void progressBar(int width, String title, int current, int total, String subtitle) {
+        if (total <= 0) {
+            throw new IllegalArgumentException("Total must be greater than 0");
+        }
+        if (width <= 0) {
+            throw new IllegalArgumentException("Width must be greater than 0");
+        }
+        if (current < 0 || current > total) {
+            throw new IllegalArgumentException("Current must be between 0 and total");
+        }
         String filled = "█";
         String unfilled = "░";
         double fill = (double) current / total;
