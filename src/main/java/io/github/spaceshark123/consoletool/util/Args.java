@@ -6,10 +6,17 @@ public final class Args {
     private Args() {
     }
 
-    public static void require(String[] args, int count) {
+    public static void min(String[] args, int count) {
         if (args.length < count) {
             throw new IllegalArgumentException(
                     "Expected at least " + count + " arguments, got " + args.length);
+        }
+    }
+
+    public static void require(String[] args, int count) {
+        if (args.length != count) {
+            throw new IllegalArgumentException(
+                    "Expected exactly " + count + " arguments, got " + args.length);
         }
     }
 
