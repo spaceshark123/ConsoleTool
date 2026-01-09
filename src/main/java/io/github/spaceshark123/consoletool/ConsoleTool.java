@@ -9,7 +9,7 @@ public class ConsoleTool {
     // the scanner object that will be used to read user input
     private Scanner scanner;
     // the hashmap that will store the commands and their respective functions
-    private HashMap<String, Command> commands;
+    private final Map<String, Command> commands = new HashMap<String, Command>();
     // title of the console
     private String title;
     private InputStream in;
@@ -20,7 +20,6 @@ public class ConsoleTool {
     // constructor
     public ConsoleTool(InputStream in, PrintStream out, String title) {
         scanner = new Scanner(in);
-        commands = new HashMap<String, Command>();
         this.in = in;
         this.out = out;
         this.title = title;
@@ -39,8 +38,11 @@ public class ConsoleTool {
         while (running) {
             // read the user input
             String input = Input();
+            if (input.trim().isEmpty()) {
+                continue;
+            }
             // split the input into an array of strings
-            String[] inputArray = input.split(" ");
+            String[] inputArray = tokenize(input).toArray(new String[0]);
             // get the command name
             String commandName = inputArray[0];
             // get the command arguments
@@ -56,70 +58,81 @@ public class ConsoleTool {
         }
     }
 
+    public void stop() {
+        running = false;
+    }
+
+    // utility function to tokenize input string while respecting quoted substrings
+    private static List<String> tokenize(String input) {
+        List<String> tokens = new ArrayList<>();
+        boolean inQuotes = false;
+        StringBuilder current = new StringBuilder();
+
+        for (char c : input.toCharArray()) {
+            if (c == '"') {
+                inQuotes = !inQuotes;
+            } else if (c == ' ' && !inQuotes) {
+                if (current.length() > 0) {
+                    tokens.add(current.toString());
+                    current.setLength(0);
+                }
+            } else {
+                current.append(c);
+            }
+        }
+        if (current.length() > 0)
+            tokens.add(current.toString());
+        return tokens;
+    }
+
     // this interface is used to define the structure of a command
     public interface Command {
         // this function is used to execute the command
         public void execute(String... arguments);
+
+        default String description() {
+            return "";
+        }
     }
 
-    // CALL THIS FUNCTION TO STOP THE CONSOLE INTERFACE
+    // this function is used to close the console interface
     public void finish() {
-        scanner.close();
+        // NO scanner.close()
     }
 
-    public void output(Object output) {
+    // finish method that allows closing streams (recommended to avoid resource leaks)
+    public void finish(boolean closeStreams) {
+        if (closeStreams) {
+            scanner.close();
+        }
+    }
+
+    public void println(Object output) {
         out.println(output);
     }
 
-    public void output(int output) {
+    public void println(int output) {
         out.println(output);
     }
 
-    public void output(double output) {
+    public void println(double output) {
         out.println(output);
     }
 
-    public void output(int[] arr) {
-        //rewrite with stringbuilder
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        for (int i = 0; i < arr.length - 1; i++) {
-            sb.append(arr[i]);
-            sb.append(", ");
-        }
-        sb.append(arr[arr.length - 1]);
-        sb.append("]");
-        out.println(sb.toString());
-	}
+    public void println(int[] arr) {
+        out.println(Arrays.toString(arr));
+    }
 
-	public void output(double[] arr) {
-		//rewrite with stringbuilder
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        for (int i = 0; i < arr.length - 1; i++) {
-            sb.append(arr[i]);
-            sb.append(", ");
-        }
-        sb.append(arr[arr.length - 1]);
-        sb.append("]");
-        out.println(sb.toString());
-	}
+    public void println(double[] arr) {
+        out.println(Arrays.toString(arr));
+    }
 
-	public void output(Object[] arr) {
-		//rewrite with stringbuilder
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        for (int i = 0; i < arr.length - 1; i++) {
-            sb.append(arr[i].toString());
-            sb.append(", ");
-        }
-        sb.append(arr[arr.length - 1]);
-        sb.append("]");
-        out.println(sb.toString());
-	}
+    public void println(Object[] arr) {
+        out.println(Arrays.toString(arr));
+    }
 
     public String input() {
-        System.out.print(">> ");
+        out.print(">> ");
         return scanner.nextLine();
     }
 
@@ -130,21 +143,21 @@ public class ConsoleTool {
     }
 
     public void progressBar(int width, String title, int current, int total, String subtitle) {
-		String filled = "█";
-		String unfilled = "░";
-		double fill = (double) current / total;
+        String filled = "█";
+        String unfilled = "░";
+        double fill = (double) current / total;
         if (fill >= 0 && fill <= 1) {
-            //set progress bar
+            // set progress bar
             int fillAmount = (int) Math.ceil(fill * width);
             StringBuilder bar = new StringBuilder();
             bar.append(title).append(": ").append(filled.repeat(fillAmount)).append(unfilled.repeat(width - fillAmount))
                     .append(" ").append(current).append("/").append(total).append(" ").append(subtitle).append(" ");
-            if(current == total) {
+            if (current == total) {
                 bar.append("\n");
             } else {
                 bar.append("\r");
             }
             out.print(bar.toString());
         }
-	}
+    }
 }
