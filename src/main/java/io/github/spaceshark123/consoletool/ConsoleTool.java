@@ -39,9 +39,9 @@ public class ConsoleTool {
         }
 
         // add basic commands (help, clear, exit)
-        addCommand("help", new HelpCommand(this));
-        addCommand("clear", new ClearCommand(this));
-        addCommand("exit", new ExitCommand(this, quitOnExit));
+        addCommand("help", new HelpCommand());
+        addCommand("clear", new ClearCommand());
+        addCommand("exit", new ExitCommand(quitOnExit));
 
         clear();
     }
@@ -99,10 +99,9 @@ public class ConsoleTool {
             }
             // execute the command
             try {
-                command.execute(arguments);
+                command.execute(this, arguments);
             } catch (Exception e) {
-                println("Error: An exception occurred while executing the command.");
-                e.printStackTrace(out);
+                println("Error: " + e.getMessage());
             }
 
         }
@@ -174,7 +173,14 @@ public class ConsoleTool {
 
     public String input() {
         out.print(">> ");
-        return scanner.nextLine();
+        try {
+            return scanner.nextLine();
+        } catch (NoSuchElementException e) {
+            // This exception occurs when the input stream is closed.
+            // We handle it by stopping the console.
+            stop();
+            return "";
+        }
     }
 
     public void clear() {

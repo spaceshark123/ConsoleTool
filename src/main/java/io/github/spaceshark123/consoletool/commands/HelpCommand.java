@@ -4,15 +4,8 @@ import io.github.spaceshark123.consoletool.ConsoleTool;
 import java.util.Map;
 
 public class HelpCommand implements Command {
-
-    private final ConsoleTool console;
-
-    public HelpCommand(ConsoleTool console) {
-        this.console = console;
-    }
-
     @Override
-    public void execute(String... args) {
+    public void execute(ConsoleTool console, String... args) {
         Map<String, Command> commands = console.getCommands();
 
         if (args.length == 0) {
