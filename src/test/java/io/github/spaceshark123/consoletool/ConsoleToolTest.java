@@ -4,7 +4,7 @@ import java.util.Scanner;
 import java.util.HashMap;
 import java.util.Arrays;
 
-public class Main {
+public class ConsoleToolTest {
     public static void main(String[] args) throws Exception {
         ConsoleTool console = new ConsoleTool(System.in, System.out, "Test Console\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
         console.addCommand("test", new ConsoleTool.Command() {

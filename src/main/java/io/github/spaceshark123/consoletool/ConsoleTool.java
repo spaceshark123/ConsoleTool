@@ -2,34 +2,46 @@ package io.github.spaceshark123.consoletool;
 
 import java.util.*;
 import java.io.*;
+import io.github.spaceshark123.consoletool.commands.Command;
+import io.github.spaceshark123.consoletool.commands.HelpCommand;
 
 // this class is used to create a console interface for the user to interact with the program (similar to a command line interface)
 // it will have functions to add custom commands that execute their own code and take in their own arguments.
 public class ConsoleTool {
     // the scanner object that will be used to read user input
-    private Scanner scanner;
+    private final Scanner scanner;
     // the hashmap that will store the commands and their respective functions
     private final Map<String, Command> commands = new HashMap<String, Command>();
     // title of the console
-    private String title;
-    private InputStream in;
-    private PrintStream out;
+    private final String title;
+    private final String description;
+    private final InputStream in;
+    private final PrintStream out;
 
     private boolean ansiEnabled = true;
     private volatile boolean running = false;
 
     // constructor
-    public ConsoleTool(InputStream in, PrintStream out, String title) {
+    public ConsoleTool(InputStream in, PrintStream out, String title, String description) {
         scanner = new Scanner(in);
         this.in = in;
         this.out = out;
         this.title = title;
+        this.description = description;
+
         // initially set ansiEnabled to false if on windows (for compatibility)
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("win")) {
             ansiEnabled = false;
         }
+
+        addCommand("help", new HelpCommand(this));
+
         clear();
+    }
+
+    public ConsoleTool(InputStream in, PrintStream out, String title) {
+        this(in, out, title, "");
     }
 
     public void setAnsiEnabled(boolean enabled) {
@@ -41,30 +53,43 @@ public class ConsoleTool {
         commands.put(commandName, command);
     }
 
+    // this function is used to get the commands hashmap as a read-only map
+    public Map<String, Command> getCommands() {
+        return Collections.unmodifiableMap(commands);
+    }
+
+    // this function is used to remove a command from the hashmap
+    public void removeCommand(String commandName) {
+        commands.remove(commandName);
+    }
+
     // this function is used to start the console interface
     public void start() {
         // the main loop of the console interface
         running = true;
         while (running) {
             // read the user input
-            String input = Input();
+            String input = input();
             if (input.trim().isEmpty()) {
                 continue;
             }
-            // split the input into an array of strings
+            // tokenize the input string
             String[] inputArray = tokenize(input).toArray(new String[0]);
-            // get the command name
             String commandName = inputArray[0];
-            // get the command arguments
             String[] arguments = Arrays.copyOfRange(inputArray, 1, inputArray.length);
             // check if the command exists in the hashmap
-            if (commands.containsKey(commandName)) {
-                // execute the command
-                commands.get(commandName).execute(arguments);
-            } else {
-                // if the command does not exist, print an error message
-                Output("Error: Command not found");
+            if (!commands.containsKey(commandName)) {
+                println("Error: Unknown command '" + commandName + "'");
+                continue;
             }
+            // execute the command
+            try {
+                commands.get(commandName).execute(arguments);
+            } catch (Exception e) {
+                println("Error: An exception occurred while executing the command.");
+                e.printStackTrace(out);
+            }
+
         }
     }
 
@@ -93,16 +118,6 @@ public class ConsoleTool {
         if (current.length() > 0)
             tokens.add(current.toString());
         return tokens;
-    }
-
-    // this interface is used to define the structure of a command
-    public interface Command {
-        // this function is used to execute the command
-        public void execute(String... arguments);
-
-        default String description() {
-            return "";
-        }
     }
 
     // this function is used to close the console interface
@@ -161,6 +176,10 @@ public class ConsoleTool {
             out.flush();
         }
         out.println(title);
+        if (!description.isEmpty()) {
+            out.println(description);
+        }
+        out.println("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
     }
 
     public void progressBar(int width, String title, int current, int total, String subtitle) {
