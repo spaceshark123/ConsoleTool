@@ -2,8 +2,11 @@ package io.github.spaceshark123.consoletool;
 
 import java.util.*;
 import java.io.*;
+
+import io.github.spaceshark123.consoletool.commands.ClearCommand;
 import io.github.spaceshark123.consoletool.commands.Command;
 import io.github.spaceshark123.consoletool.commands.HelpCommand;
+import io.github.spaceshark123.consoletool.commands.ExitCommand;
 
 // this class is used to create a console interface for the user to interact with the program (similar to a command line interface)
 // it will have functions to add custom commands that execute their own code and take in their own arguments.
@@ -22,7 +25,7 @@ public class ConsoleTool {
     private volatile boolean running = false;
 
     // constructor
-    public ConsoleTool(InputStream in, PrintStream out, String title, String description) {
+    public ConsoleTool(InputStream in, PrintStream out, String title, String description, boolean quitOnExit) {
         scanner = new Scanner(in);
         this.in = in;
         this.out = out;
@@ -35,13 +38,24 @@ public class ConsoleTool {
             ansiEnabled = false;
         }
 
+        // add basic commands (help, clear, exit)
         addCommand("help", new HelpCommand(this));
+        addCommand("clear", new ClearCommand(this));
+        addCommand("exit", new ExitCommand(this, quitOnExit));
 
         clear();
     }
 
+    public ConsoleTool(InputStream in, PrintStream out, String title, String description) {
+        this(in, out, title, description, true);
+    }
+
     public ConsoleTool(InputStream in, PrintStream out, String title) {
-        this(in, out, title, "");
+        this(in, out, title, "", true);
+    }
+
+    public ConsoleTool(InputStream in, PrintStream out, String title, boolean quitOnExit) {
+        this(in, out, title, "", quitOnExit);
     }
 
     public void setAnsiEnabled(boolean enabled) {
@@ -78,13 +92,14 @@ public class ConsoleTool {
             String commandName = inputArray[0];
             String[] arguments = Arrays.copyOfRange(inputArray, 1, inputArray.length);
             // check if the command exists in the hashmap
-            if (!commands.containsKey(commandName)) {
-                println("Error: Unknown command '" + commandName + "'");
+            Command command = commands.get(commandName);
+            if (command == null) {
+                println("Error: Command not found");
                 continue;
             }
             // execute the command
             try {
-                commands.get(commandName).execute(arguments);
+                command.execute(arguments);
             } catch (Exception e) {
                 println("Error: An exception occurred while executing the command.");
                 e.printStackTrace(out);
