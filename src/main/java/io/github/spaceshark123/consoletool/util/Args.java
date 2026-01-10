@@ -27,6 +27,30 @@ public final class Args {
         }
     }
 
+    public static void bound(double value, double min, double max, String name) {
+        if (value < min || value > max) {
+            throw new IllegalArgumentException(
+                    "Value for " + name + " out of bounds: " + value +
+                            " (expected between " + min + " and " + max + ")");
+        }
+    }
+
+    public static void boundBelow(double value, double max, String name) {
+        if (value > max) {
+            throw new IllegalArgumentException(
+                    "Value for " + name + " out of bounds: " + value +
+                            " (expected below " + max + ")");
+        }
+    }
+
+    public static void boundAbove(double value, double min, String name) {
+        if (value < min) {
+            throw new IllegalArgumentException(
+                    "Value for " + name + " out of bounds: " + value +
+                            " (expected above " + min + ")");
+        }
+    }
+
     public static int parseInt(String value, String name) {
         try {
             return Integer.parseInt(value);
